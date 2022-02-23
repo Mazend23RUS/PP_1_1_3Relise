@@ -15,7 +15,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
 
     public void createUsersTable() {
         try (Statement statement = connectionC().createStatement()){
-            statement.execute("CREATE TABLE IF NOT EXISTS User(id BIGINT(5) NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20) NOT NULL, lastName VARCHAR(30) NOT NULL, age INT NOT NULL)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS User(id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20) NOT NULL, lastName VARCHAR(30) NOT NULL, age INT NOT NULL)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -31,11 +31,11 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (PreparedStatement preparedStatement = connectionC().prepareStatement("INSERT INTO User (name,lastName,age) VALUES (?,?,?)")) {
+        try (PreparedStatement preparedStatement = connectionC().prepareStatement("INSERT INTO User (NAME,LASTNAME,AGE) VALUES (?,?,?)")) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
-              preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
