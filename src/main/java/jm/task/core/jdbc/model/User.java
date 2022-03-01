@@ -1,21 +1,23 @@
 package jm.task.core.jdbc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Objects;
 
-@Table
+@Entity // анатация сущность
+@Table (name = "user")
 public class User {
-    @Id
+    @Id //анатация первичного ключа PRIMARY KEY(id)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // значение id генерируется автоматически
+    @Column (name = "id")
     private Long id;
 
-    @Column
+    @Column (name = "name")
     private String name;
 
-    @Column
+    @Column (name = "lastName")
     private String lastName;
 
-    @Column
+     @Column (name = "age")
     private byte age;
 
     public User() {
@@ -58,6 +60,19 @@ public class User {
 
     public void setAge(Byte age) {
         this.age = age;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User that = (User) o;
+        return id == that.id && age == that.age && Objects.equals(name, that.name) && Objects.equals(lastName, that.lastName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, lastName, age);
     }
 
     @Override
