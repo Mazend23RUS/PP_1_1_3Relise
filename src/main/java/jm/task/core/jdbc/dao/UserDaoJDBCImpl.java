@@ -10,22 +10,28 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     Connection connection = Util.ConnectionC();
+
     public UserDaoJDBCImpl() throws SQLException {
     }
 
     public void createUsersTable() {
-        try (Statement statement = connection.createStatement()){
+        try (Statement statement = connection.createStatement()) {
 
             connection.setAutoCommit(false);
 
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS User"+
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS User" +
                     "(id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,"
                     + "name VARCHAR(20) NOT NULL,"
                     + "lastName VARCHAR(30) NOT NULL,"
                     + "age INT NOT NULL)");
 
             connection.commit();
-            connection.close();
+
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("В ходе закрытия соединения возникла ошибка");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -40,7 +46,14 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.execute("DROP TABLE IF EXISTS User");
 
             connection.commit();
-            connection.close();
+
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("В ходе закрытия соединения возникла ошибка");
+            }
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -56,7 +69,12 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.executeUpdate();
 
             connection.commit();
-            connection.close();
+
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("В ходе закрытия соединения возникла ошибка");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -67,7 +85,14 @@ public class UserDaoJDBCImpl implements UserDao {
         try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM User WHERE id = ?")) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
-            connection.close();
+
+
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("В ходе закрытия соединения возникла ошибка");
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -90,7 +115,14 @@ public class UserDaoJDBCImpl implements UserDao {
                 listUser.add(newUser);
             }
             connection.commit();
-            connection.close();
+
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("В ходе закрытия соединения возникла ошибка");
+            }
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -104,7 +136,14 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.execute("TRUNCATE TABLE User");
 
             connection.commit();
-            connection.close();
+
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("В ходе закрытия соединения возникла ошибка");
+            }
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

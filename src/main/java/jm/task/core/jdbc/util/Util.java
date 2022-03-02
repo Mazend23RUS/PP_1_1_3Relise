@@ -17,16 +17,19 @@ public class Util {
             e.printStackTrace();
         }
     }
-    public static  Connection ConnectionC() throws SQLException {
+
+    public static Connection ConnectionC() throws SQLException {
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
             return connection;
+        } catch (SQLException e) {
+            throw new SQLException ("Не удалось установить соединение");
         }
     }
+}
 
-    public static void closeConntctionC() throws SQLException {
-        ConnectionC().close();
-        }
-    }
+
+
+
 
 
 
