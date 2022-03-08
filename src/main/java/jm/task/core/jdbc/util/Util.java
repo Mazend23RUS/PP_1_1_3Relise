@@ -10,18 +10,12 @@ public class Util {
     private static final String USERNAME = "Mazend23";
     private static final String PASSWORD = "S5846124Q/&dl*d/";
 
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static Connection ConnectionC() throws SQLException {
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            Class.forName("com.mysql.cj.jdbc.Driver");
             return connection;
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new SQLException ("Не удалось установить соединение");
         }
     }

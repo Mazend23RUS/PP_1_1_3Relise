@@ -15,35 +15,43 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        try (Statement statement = connection.createStatement()) {
+
+        String sqlRequest = "CREATE TABLE IF NOT EXISTS User"
+                + "(id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,"
+                + "name VARCHAR(20) NOT NULL,"
+                + "lastName VARCHAR(30) NOT NULL,"
+                + "age INT NOT NULL)";
+
+        try (PreparedStatement ps = connection.prepareStatement(sqlRequest)) {
 
             connection.setAutoCommit(false);
-
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS User" +
-                    "(id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,"
-                    + "name VARCHAR(20) NOT NULL,"
-                    + "lastName VARCHAR(30) NOT NULL,"
-                    + "age INT NOT NULL)");
-
+            ps.executeUpdate();
             connection.commit();
 
             try {
                 connection.close();
             } catch (SQLException e) {
+                connection.rollback();
                 System.out.println("В ходе закрытия соединения возникла ошибка");
             }
 
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
 
 
     public void dropUsersTable() {
-        try (Statement statement = connection.createStatement()) {
+        String sqlRequest = "DROP TABLE IF EXISTS User";
+        try (PreparedStatement ps = connection.prepareStatement(sqlRequest)) {
 
             connection.setAutoCommit(false);
-            statement.execute("DROP TABLE IF EXISTS User");
+            ps.executeUpdate();
 
             connection.commit();
 
@@ -55,6 +63,11 @@ public class UserDaoJDBCImpl implements UserDao {
 
 
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
@@ -73,23 +86,36 @@ public class UserDaoJDBCImpl implements UserDao {
             try {
                 connection.close();
             } catch (SQLException e) {
+                connection.rollback();
                 System.out.println("В ходе закрытия соединения возникла ошибка");
             }
 
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
 
     public void removeUserById(long id) {
+
         try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM User WHERE id = ?")) {
+
+            connection.setAutoCommit(false);
+
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
+
+            connection.commit();
 
 
             try {
                 connection.close();
             } catch (SQLException e) {
+                connection.rollback();
                 System.out.println("В ходе закрытия соединения возникла ошибка");
             }
 
@@ -100,10 +126,11 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> listUser = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
+
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM User")) {
 
             connection.setAutoCommit(false);
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM User");
+            ResultSet resultSet = ps.executeQuery();
 
             while (resultSet.next()) {
                 User newUser = new User();
@@ -116,35 +143,48 @@ public class UserDaoJDBCImpl implements UserDao {
             }
             connection.commit();
 
+
             try {
                 connection.close();
             } catch (SQLException e) {
+                connection.rollback();
                 System.out.println("В ходе закрытия соединения возникла ошибка");
             }
 
 
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
         return listUser;
     }
 
     public void cleanUsersTable() {
-        try (Statement statement = connection.createStatement()) {
+        try (PreparedStatement ps = connection.prepareStatement("TRUNCATE TABLE User")) {
 
             connection.setAutoCommit(false);
-            statement.execute("TRUNCATE TABLE User");
+            ps.execute();
 
             connection.commit();
 
             try {
                 connection.close();
             } catch (SQLException e) {
+                connection.rollback();
                 System.out.println("В ходе закрытия соединения возникла ошибка");
             }
 
 
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
 
