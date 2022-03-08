@@ -58,6 +58,7 @@ public class UserDaoJDBCImpl implements UserDao {
             try {
                 connection.close();
             } catch (SQLException e) {
+                connection.rollback();
                 System.out.println("В ходе закрытия соединения возникла ошибка");
             }
 
@@ -120,6 +121,11 @@ public class UserDaoJDBCImpl implements UserDao {
             }
 
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
