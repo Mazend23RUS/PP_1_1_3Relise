@@ -1,6 +1,7 @@
 package jm.task.core.jdbc.util;
 
 
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -11,7 +12,7 @@ import org.hibernate.cfg.Environment;
 import java.util.Properties;
 
 
-public class Util {
+public class Util extends UserDaoHibernateImpl {
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String URL = "jdbc:mysql://localhost:3306/db?autoReconnect=true&useSSL=false";
     private static final String USERNAME = "Mazend23";
@@ -54,10 +55,16 @@ public class Util {
         return sessionfactory;
     }
 
-    public static void main(String[] args) {
-        HibernateConnection();
-    }
-
+//    public static void main(String[] args) {
+//        HibernateConnection();
+//    }
+//UserDaoHibernateImpl usHB = new UserDaoHibernateImpl();
+//
+//
+//    @Override
+//    public void dropUsersTable() {
+//        super.dropUsersTable();
+//    }
 
     //    public static Connection ConnectionC() throws SQLException {
 //        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {

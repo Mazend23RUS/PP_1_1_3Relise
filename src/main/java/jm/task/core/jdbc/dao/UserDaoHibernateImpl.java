@@ -6,7 +6,11 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 
@@ -28,19 +32,17 @@ private static SessionFactory sessionFactory = Util.HibernateConnection();
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
         try {
-            session.createSQLQuery(sql).executeUpdate();
-
+            session.createNativeQuery(sql).executeUpdate();
             transaction.commit();
-            sessionFactory.close();
             session.close();
             System.out.println("Все норм, табличка создана");
+
 
         } catch (HibernateException e) {
             System.out.println("Что то пошло не так");
             e.getStackTrace();
             transaction.rollback();
         }
-
 
     }
 
@@ -54,9 +56,9 @@ private static SessionFactory sessionFactory = Util.HibernateConnection();
         try {
             session.createSQLQuery(sql).executeUpdate();
             transaction.commit();
-            sessionFactory.close();
             session.close();
             System.out.println("Все норм, табличка удалена");
+
         } catch (HibernateException e) {
             System.out.println("Что то пошло не так");
             e.getStackTrace();
@@ -70,11 +72,9 @@ private static SessionFactory sessionFactory = Util.HibernateConnection();
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
         try {
-            session.save(user);
-
+            session.persist(user);
             transaction.commit();
-            sessionFactory.close();
-            System.out.println("Все норм,данные сохранены ");
+            System.out.println("Все норм,данные сохранены");
             session.close();
 
         } catch (HibernateException e) {
@@ -91,9 +91,8 @@ private static SessionFactory sessionFactory = Util.HibernateConnection();
     Transaction transaction = session.beginTransaction();
 
     try {
-        session.delete(String.valueOf(User.class),id);
+        session.remove(session.get(User.class,id));
         transaction.commit();
-        sessionFactory.close();
         System.out.println("Все норм,данные User удалены ");
         session.close();
 
@@ -104,22 +103,29 @@ private static SessionFactory sessionFactory = Util.HibernateConnection();
     }
     }
 
-
-    List <User> users;
     @Override
     public List<User> getAllUsers() {
-    Session session = sessionFactory.openSession();
-    Transaction transaction = session.beginTransaction();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
 
-    try {
-        users = (List<User>) session.createCriteria(User.class).list();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery(User.class);
+        Root<User> root = cq.from(User.class);
+        cq.select(root);
 
-    } catch (HibernateException e){
-        System.out.println("Что то пошло не так");
-        e.getStackTrace();
-        transaction.rollback();
-    }
-        return users;
+        Query<User> query = session.createQuery(cq);
+        List<User> userL = query.getResultList();
+
+        try {
+            transaction.commit();
+            return userL;
+        } catch (HibernateException e) {
+            System.out.println("Что то пошло не так");
+            e.getStackTrace();
+            transaction.rollback();
+        }
+        session.close();
+        return userL;
     }
 
     @Override
@@ -127,17 +133,16 @@ private static SessionFactory sessionFactory = Util.HibernateConnection();
     Session session = sessionFactory.openSession();
     Transaction transaction = session.beginTransaction();
 
-    try {
-        users = (List<User>) session.createCriteria(User.class).list();
-        for (User u:users) {
-            session.delete(u);
+        try {
+            session.createNativeQuery("TRUNCATE TABLE db.User;").executeUpdate();
+            transaction.commit();
+            System.out.println("Удалено");
+            session.close();
+        } catch (HibernateException e) {
+            System.out.println("Что то пошло не так");
+            e.printStackTrace();
+            transaction.rollback();
         }
-        transaction.commit();
-        sessionFactory.close();
-        System.out.println("Удалено");
-    } catch (HibernateException e){
-        System.out.println("Что то пошло не так");
-        e.getStackTrace();
-    }
+
     }
 }

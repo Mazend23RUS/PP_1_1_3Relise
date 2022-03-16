@@ -9,16 +9,13 @@ import java.util.Objects;
 public class User {
     @Id //анатация первичного ключа PRIMARY KEY(id)
     @GeneratedValue(strategy = GenerationType.IDENTITY) // значение id генерируется автоматически
-    @Column(name = "id")
+
     private Long id;
 
-    @Column (name = "name")
     private String name;
 
-    @Column (name = "lastName")
     private String lastName;
 
-     @Column (name = "age")
     private byte age;
 
     public User() {
